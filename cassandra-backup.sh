@@ -35,7 +35,7 @@ _BACKUP_DIR="${HOME}/backup/cassandra" # "/backup/cassandra"
 chown -R `whoami` ${_BACKUP_DIR} && chmod -R 775 ${_BACKUP_DIR}
 
 # Backup entire database schema
-cqlsh -h `hostname` -e "DESC SCHEMA" > ${_BACKUP_DIR}/db_schema-$(date +%F).cql
+cqlsh `hostname` -e "DESC SCHEMA" > ${_BACKUP_DIR}/db_schema-$(date +%F).cql
 
 # Alternatively you can backup a keyspace schema
 # cqlsh -e "DESC KEYSPACE keyspace" > ${_BACKUP_DIR}/keyspace_schema.cql
