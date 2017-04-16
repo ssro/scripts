@@ -109,3 +109,34 @@ docker run -d --name sentry-worker-1 \
 # SENTRY_FEATURES['auth:register'] = False
 # For this you will need to clone https://github.com/getsentry/docker-sentry.git
 # edit and rebuild sentry container
+
+#-- Backing up the database
+# docker exec -it postgres bash -c 'pg_dump -U sentry sentry > /var/lib/postgresql/data/pgdata/sentry.sql'
+# The sql file will be written to the container's folder /var/lib/postgresql/data/pgdata/
+# and to the host's folder defined in the env. variable /sentry/PG_DIR which points to $HOME/sentry/postgres
+
+#-- Restoring a database from a backup (for example from another sentry install):
+# 1. Get the secret key from the other sentry install and add it to /sentry/SENTRY_SECRET_KEY
+# 2. Create a sql backup of the database (from the other sentry installation)
+# 3. Start your postgresql container then stop it (this will create the $HOME/sentry/postgres directory)
+# and copy the backed up sql file there (i.e. sudo cp backed-up-sentry.sql $HOME/sentry/postgres/)
+# 3. Do not run `etcdctl set /sentry/SENTRY_SECRET_KEY $(docker run --rm sentry config generate-secret-key)`
+# since we already have it
+# 4. Start your postgresql container and then run below command
+# docker exec -it postgres bash -c 'psql -U sentry sentry < /var/lib/postgresql/data/pgdata/backed-up-sentry.sql'
+# Wait for it to finish
+# 5. Proceed upgrading the database and the rest of steps
+
+#-- Removing old entries from the database
+# Over time events pile up and need some spring cleaning. To do so, use the cleanup command of sentry.
+# docker run -it --rm \
+#  -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
+#  -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
+#  --link postgres:postgres \
+#  --link redis:redis \
+#  sentry cleanup --days 90 --concurrency 4
+# This will clean all entries from all projects older than 90 days.
+# The default command will clean up entries which are
+# older than 30 days if the `--days INTEGER` is not specified.
+# Also it's possible to trim down entries based on projects.
+# https://docs.sentry.io/server/cli/cleanup/
