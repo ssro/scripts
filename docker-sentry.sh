@@ -90,6 +90,13 @@ docker run -d -p 9000:9000 \
 docker run -d --name sentry-cron \
   -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
   -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
+  -e SENTRY_SINGLE_ORGANIZATION=$(etcdctl get /sentry/SENTRY_SINGLE_ORGANIZATION) \
+  -e SENTRY_SERVER_EMAIL=$(etcdctl get /sentry/SENTRY_SERVER_EMAIL) \
+  -e SENTRY_EMAIL_HOST=$(etcdctl get /sentry/SENTRY_EMAIL_HOST) \
+  -e SENTRY_EMAIL_PASSWORD=$(etcdctl get /sentry/SENTRY_EMAIL_PASSWORD) \
+  -e SENTRY_EMAIL_USER=$(etcdctl get /sentry/SENTRY_EMAIL_USER) \
+  -e SENTRY_EMAIL_PORT=$(etcdctl get /sentry/SENTRY_EMAIL_PORT) \
+  -e SENTRY_EMAIL_USE_TLS=$(etcdctl get /sentry/SENTRY_EMAIL_USE_TLS) \
   --link postgres:postgres \
   --link redis:redis \
   sentry run cron
@@ -98,6 +105,13 @@ docker run -d --name sentry-cron \
 docker run -d --name sentry-worker-1 \
   -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
   -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
+  -e SENTRY_SINGLE_ORGANIZATION=$(etcdctl get /sentry/SENTRY_SINGLE_ORGANIZATION) \
+  -e SENTRY_SERVER_EMAIL=$(etcdctl get /sentry/SENTRY_SERVER_EMAIL) \
+  -e SENTRY_EMAIL_HOST=$(etcdctl get /sentry/SENTRY_EMAIL_HOST) \
+  -e SENTRY_EMAIL_PASSWORD=$(etcdctl get /sentry/SENTRY_EMAIL_PASSWORD) \
+  -e SENTRY_EMAIL_USER=$(etcdctl get /sentry/SENTRY_EMAIL_USER) \
+  -e SENTRY_EMAIL_PORT=$(etcdctl get /sentry/SENTRY_EMAIL_PORT) \
+  -e SENTRY_EMAIL_USE_TLS=$(etcdctl get /sentry/SENTRY_EMAIL_USE_TLS) \
   --link postgres:postgres \
   --link redis:redis \
   sentry run worker
