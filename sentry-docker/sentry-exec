@@ -3,8 +3,10 @@
 # Author Sebastian Sasu <sebi@nologin.ro>
 
 usage() {
+  echo ""
   echo "Usage : sentry.sh start|stop|restart|status|pull|upgrade|cleanup"
-  echo "sentry.sh help for more detailed explanations"
+  echo "sentry-exec help for more detailed explanations"
+  echo ""
 }
 
 help() {
