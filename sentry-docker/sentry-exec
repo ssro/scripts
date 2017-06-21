@@ -1,22 +1,44 @@
 #!/bin/bash
-# This script is used if sentry was deployed using docker-sentry.sh script
 
-# Author sebi@nologin.ro
+# Author Sebastian Sasu <sebi@nologin.ro>
 
 usage() {
-  echo "Usage : sentry-exec start|stop|restart|status"
+  echo "Usage : sentry.sh start|stop|restart|status|pull|upgrade|cleanup"
+  echo "sentry.sh help for more detailed explanations"
 }
 
-start() {
-  # Start redis
+help() {
+  echo ""
+  echo "Containers that this script manages are Redis, PostgreSQL and Sentry (sentry, workers, cron)"
+  echo "Detailed command arguments help: "
+  echo ""
+  echo "start:    Starts all containers"
+  echo "stop:     Stops all containers"
+  echo "restart:  Restarts all containers"
+  echo "status:   Shows status of containers, a.k.a. docker stats"
+  echo "pull:     Pull latest images of containers"
+  echo "upgrade:  Performs upgrade of sentry"
+  echo "cleanup:  Delete a portion of trailing data based on creation date. Defaults to 30 days"
+  echo ""
+}
+
+# Redis
+start_redis() {
   echo -e "Starting Redis container..."
   docker run -d --restart=always \
     --name redis \
     --sysctl=net.core.somaxconn=65535 \
     -v $(etcdctl get /sentry/REDIS_DIR):/data \
     redis; sleep 15
+}
 
-  # Start postgresql
+stop_redis() {
+  echo -e "Stopping Redis..."
+  docker stop -t 30 redis; docker rm -f redis
+}
+
+# Postgres
+start_pg() {
   echo -e "Starting PostgreSQL container..."
   docker run -d --restart=always --name postgres \
     -e POSTGRES_PASSWORD=$(etcdctl get /sentry/POSTGRES_PASSWORD) \
@@ -24,8 +46,17 @@ start() {
     -e PGDATA=$(etcdctl get /sentry/PGDATA) \
     -v $(etcdctl get /sentry/PG_DIR):/var/lib/postgresql/data/pgdata \
     postgres; sleep 15
+}
 
-  # Start sentry
+stop_pg() {
+  echo -e "Stopping postgresql..."
+  docker stop -t 60 postgres; docker rm -f postgres
+}
+
+### Sentry
+
+# Sentry
+start_sentry() {
   echo -e "Starting sentry containers..."
   docker run -d --restart=always -p 9000:9000 \
     --name sentry \
@@ -40,9 +71,18 @@ start() {
     -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
     --link redis:redis \
     --link postgres:postgres \
-    sentry; sleep 5
+    quay.io/playlab/sentry; sleep 5
+}
 
-  # Start sentry cron
+stop_sentry() {
+  echo -e "Stopping sentry..."
+  docker stop -t 15 sentry; docker rm -f sentry
+}
+
+# Sentry CRON & WORKERS
+start_sentry_cron_worker() {
+  echo "Starting sentry cron & workers..."
+# Start sentry cron
   docker run -d --restart=always --name sentry-cron \
     -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
     -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
@@ -55,9 +95,9 @@ start() {
     -e SENTRY_EMAIL_USE_TLS=$(etcdctl get /sentry/SENTRY_EMAIL_USE_TLS) \
     --link postgres:postgres \
     --link redis:redis \
-    sentry run cron; sleep 5
+    quay.io/playlab/sentry run cron; sleep 5
 
-  # Start sentry worker(s)
+# Start sentry worker(s)
   docker run -d --restart=always --name sentry-worker-1 \
     -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
     -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
@@ -70,7 +110,7 @@ start() {
     -e SENTRY_EMAIL_USE_TLS=$(etcdctl get /sentry/SENTRY_EMAIL_USE_TLS) \
     --link postgres:postgres \
     --link redis:redis \
-    sentry run worker
+    quay.io/playlab/sentry run worker
 
   docker run -d --restart=always --name sentry-worker-2 \
     -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
@@ -84,31 +124,65 @@ start() {
     -e SENTRY_EMAIL_USE_TLS=$(etcdctl get /sentry/SENTRY_EMAIL_USE_TLS) \
     --link postgres:postgres \
     --link redis:redis \
-    sentry run worker
+    quay.io/playlab/sentry run worker
 }
 
-stop() {
-  # Stop postgresql
-  echo -e "Stopping postgresql..."
-  docker stop -t 120 postgres; docker rm -f postgres
-
-  # Stop sentry
+stop_sentry_cron_worker() {
+  echo "Stopping sentry cron & workers..."
   echo -e "Stopping sentry..."
-  docker stop -t 15 sentry sentry-cron sentry-worker-1 sentry-worker-2; docker rm -f sentry sentry-cron sentry-worker-1 sentry-worker-2
+  docker stop -t 15 sentry-cron sentry-worker-1 sentry-worker-2; docker rm -f sentry-cron sentry-worker-1 sentry-worker-2
+}
 
-  # Stop redis
-  echo -e "Stopping Redis..."
-  docker stop -t 30 redis; docker rm -f redis
+full_start() {
+  start_redis
+  start_pg
+  start_sentry
+  start_sentry_cron_worker
+}
 
+full_stop() {
+  stop_pg
+  stop_sentry
+  stop_sentry_cron_worker
+  stop_redis
 }
 
 restart() {
-  stop
-  start
+  full_stop
+  full_start
+}
+
+pull() {
+  echo "Pulling postgres..."
+  docker pull postgres
+  echo "Pulling redis..."
+  docker pull redis
+  echo "Pulling sentry..."
+  docker pull quay.io/playlab/sentry
 }
 
 status() {
   docker ps | grep -v NAMES | awk '{ print $NF }' | xargs docker stats
+}
+
+upgrade() {
+  echo "Upgrading sentry..."
+  pull
+  full_stop
+  start_redis
+  start_pg
+  docker run -it --rm -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) --link postgres:postgres --link redis:redis quay.io/playlab/sentry upgrade; sleep 5
+  start_sentry
+  start_sentry_cron_worker
+}
+
+cleanup() {
+  docker run -it --rm \
+    -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
+    -v $(etcdctl get /sentry/SENTRY_DIR):/var/lib/sentry/files \
+    --link postgres:postgres \
+    --link redis:redis \
+    quay.io/playlab/sentry cleanup -q --days 30 --concurrency 4
 }
 
 case "$1" in
@@ -116,16 +190,29 @@ case "$1" in
   usage
   exit 0
   ;;
+  "help")
+  help
+  exit 0
+  ;;
   "start")
-  start
+  full_start
   ;;
   "stop")
-  stop
+  full_stop
   ;;
   "restart")
   restart
   ;;
   "status")
   status
+  ;;
+  "pull")
+  pull
+  ;;
+  "upgrade")
+  upgrade
+  ;;
+  "cleanup")
+  cleanup
   ;;
 esac
