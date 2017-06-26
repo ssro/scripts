@@ -5,7 +5,7 @@
 
 # Author Sebastian Sasu <sebi@nologin.ro>
 
-set -e
+set -e -x
 
 c6="http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm"
 c7="http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
@@ -13,7 +13,7 @@ c7="http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
 release=$(rpm --query centos-release|cut -d "-" -f3)
 
 if [[ "$release" -ne "7" ]]; then
-  echo "Installing pachages for CentOS 6...."
+  echo "Installing packages for CentOS 6...."
   sudo yum -y install "$c6"
 else echo "Installing packages for CentOS 7..."
   sudo yum -y install "$c7"
@@ -23,9 +23,9 @@ fi
 # Install kernel
 
 echo "Which kernel should I install? Mainline or long-term? (ml/lt)"
-read kernel
+read -r kernel
 
-sudo yum -y --enablerepo=elrepo-kernel install kernel-$kernel
+sudo yum -y --enablerepo=elrepo-kernel install kernel-"$kernel"
 
 
 if [[ "$release" -ne "7" ]]; then

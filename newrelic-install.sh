@@ -11,7 +11,7 @@ sudo yum -y install "$rpm_url" \
 
 echo ""
 echo "Enter your license key: "
-read license
+read -r license
 
 sudo nrsysmond-config --set license_key="$license"
 
@@ -23,7 +23,7 @@ sudo /sbin/chkconfig newrelic-sysmond on
 # sudo groupadd -r docker
 echo ""
 echo "Enable docker monitoring? y/n"
-read answer
+read -r answer
 
 if [[ "$answer" != "y" ]]; then
   exit 0
