@@ -7,7 +7,7 @@
 rpm_url="https://yum.newrelic.com/pub/newrelic/el5/x86_64/newrelic-repo-5-3.noarch.rpm"
 
 sudo yum -y install "$rpm_url" \
-  && yum -y install newrelic-sysmond
+  && sudo yum -y install newrelic-sysmond
 
 echo ""
 echo "Enter your license key: "
