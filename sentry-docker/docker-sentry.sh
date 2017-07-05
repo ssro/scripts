@@ -10,7 +10,7 @@
 # Install etcd3 for key value storage
 
 sudo yum -y install epel && sudo yum -y update
-sudo yum -y install etcd3
+sudo yum -y install etcd
 sudo systemctl enable etcd && sudo systemctl start etcd
 
 #-- Start Redis preparation
