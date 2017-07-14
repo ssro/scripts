@@ -119,11 +119,6 @@ docker run -d --name sentry-worker-1 \
 # Access your sentry installation at http://machine_ip:9000/
 # The use of nginx proxy w/ SSL is highly recommended
 
-# If you don't want users to register, you need to add to sentry.conf.py
-# SENTRY_FEATURES['auth:register'] = False
-# For this you will need to clone https://github.com/getsentry/docker-sentry.git
-# edit and rebuild sentry container
-
 #-- Backing up the database
 # docker exec -it postgres bash -c 'pg_dump -U sentry sentry > /var/lib/postgresql/data/pgdata/sentry.sql'
 # The sql file will be written to the container's folder /var/lib/postgresql/data/pgdata/
