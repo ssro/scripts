@@ -26,7 +26,7 @@ echo -e '/swapfile\t none\t swap\t sw\t 0 0' | sudo tee --append /etc/fstab > /d
 echo ""
 echo "My Operating System is CentOS/Debian (please input c or d): "
 echo ""
-read os
+read -r os
 
 if [[ "$os" == "c" ]]; then
   echo "Creating swap for CentOS..."
