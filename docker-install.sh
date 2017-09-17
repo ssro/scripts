@@ -81,4 +81,4 @@ else "Unsupported OS. Exiting..."
 fi
 
 echo ""
-echo "You can reboot your machine or start docker right away"
+echo "You need to re-login to be able to start docker as a regular user"
