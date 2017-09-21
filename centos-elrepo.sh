@@ -7,8 +7,8 @@
 
 set -e -x
 
-c6="http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm"
-c7="http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
+c6="http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm"
+c7="http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm"
 
 release=$(rpm --query centos-release|cut -d "-" -f3)
 
