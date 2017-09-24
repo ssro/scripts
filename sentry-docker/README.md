@@ -87,6 +87,7 @@ $ sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
   ]
 }
 EOF'
+$ sudo systemctl start docker
 ```
 
 - logout and re-login to your machine
