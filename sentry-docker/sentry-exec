@@ -4,7 +4,7 @@
 
 usage() {
   echo ""
-  echo "Usage : sentry.sh start|stop|restart|status|pull|upgrade|cleanup"
+  echo "Usage : sentry.sh start|stop|restart|status|pull|upgrade|cleanup|backup"
   echo "sentry-exec help for more detailed explanations"
   echo ""
 }
@@ -21,6 +21,7 @@ help() {
   echo "pull:     Pull latest images of containers"
   echo "upgrade:  Performs upgrade of sentry"
   echo "cleanup:  Delete a portion of trailing data based on creation date. Defaults to 30 days"
+  echo "backup:   Backup the postgresql database"
   echo ""
 }
 
