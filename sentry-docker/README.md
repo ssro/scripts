@@ -2,7 +2,7 @@
 
 This collection of shell scripts will attempt to install [Sentry](https://sentry.io/welcome/) on [Docker](https://www.docker.com/) on a [CentOS](https://www.centos.org/) machine (VM or bare metal).
 
-The main script, `docker-sentry` will install `etcd`, `docker`, `sentry` and `nginx` reverse proxy with SSL support. The SSL certificates will be generated using the help of  https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion
+The main script, `docker-sentry` will install `etcd`, `sentry` and `nginx` reverse proxy with SSL support. The SSL certificates will be generated using the help of  https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion
 
 Please keep in mind that in order to use SSL, you will need a DNS A, AAAA or CNAME record in your domain's zone file, otherwise SSL won't work. You can run it on port 80 but that's entirely not recommended.
 
