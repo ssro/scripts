@@ -132,4 +132,4 @@ docker run -d --name sentry-worker-1 --restart=always --network=sentry_net \
 echo -e "Installing nginx reverse proxy with SSL support...\n"
 sleep 10
 
-$HOME/scripts/nginx-proxy.sh
+$HOME/scripts/sentry-docker/nginx-proxy.sh
