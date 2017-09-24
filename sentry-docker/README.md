@@ -48,6 +48,8 @@ $ $HOME/scripts/centos-elrepo.sh
 
 ```
 $ sudo bash -c "cat <<EOF > /etc/rc.local
+#!/bin/bash
+
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 EOF"
 $ sudo chmod +x /etc/rc.local
