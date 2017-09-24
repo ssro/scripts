@@ -8,25 +8,26 @@
 
 # Get the nginx template
 WORKDIR="/opt"
-sudo bash -c 'curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > ${WORKDIR}/nginx/nginx.tmpl || exit 0'
+sudo bash -c "curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > ${WORKDIR}/nginx/nginx.tmpl || exit 0"
 
 # Start containers
 docker run -d -p 80:80 -p 443:443 \
     --network=sentry_net \
+    --network=bridge \
     --restart=always \
-    --name nginx-proxy \
+    --name nginx \
     -v /etc/nginx/conf.d  \
     -v /etc/nginx/vhost.d \
     -v /usr/share/nginx/html \
     -v ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     nginx
-
+# docker network connect bridge nginx
 docker run -d \
     --network=sentry_net \
     --restart=always \
     --name nginx-gen \
-    --volumes-from nginx-proxy \
+    --volumes-from nginx \
     -v ${WORKDIR}/nginx/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
     -v /var/run/docker.sock:/tmp/docker.sock:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen \
@@ -38,11 +39,7 @@ docker run -d \
     --network=sentry_net \
     --restart=always \
     --name nginx-letsencrypt \
-    --volumes-from nginx-proxy \
+    --volumes-from nginx \
     -v ${WORKDIR}/nginx/certs:/etc/nginx/certs:rw \
     -v /var/run/docker.sock:/var/run/docker.sock:ro \
     jrcs/letsencrypt-nginx-proxy-companion
-
-# Connect nginx to the main docker0 bridge
-# It will be the only container having both external (docker0, internet) and internal (sentry_net) access
-docker network connect bridge nginx-proxy
