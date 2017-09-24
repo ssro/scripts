@@ -1,4 +1,5 @@
 #!/bin/bash
+# THIS SCRIPT IS DEPRECATED. PLEASE SEE docker-sentry script
 # Quick and dirty install of docker-sentry (new install) on Centos 7
 
 # Use docker-install.sh from this repo to install docker engine
@@ -8,6 +9,8 @@
 # Author Sebastian Sasu <sebi@nologin.ro>
 
 # Install etcd3 for key value storage
+echo -e "THIS SCRIPT IS DEPRECATED. PLEASE SEE \033[1mdocker-sentry\033[0m"
+exit 0
 
 sudo yum -y install epel && sudo yum -y update
 sudo yum -y install etcd
