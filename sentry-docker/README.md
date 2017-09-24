@@ -41,7 +41,7 @@ Please refer to https://hub.docker.com/_/sentry/ and https://github.com/JrCs/doc
 
 ```
 $ sudo yum -y install git
-$ cd $HOME; git clone git clone https://github.com/ssro/scripts.git
+$ cd $HOME; git clone https://github.com/ssro/scripts.git
 $ $HOME/scripts/centos-elrepo.sh
 ```
 - OS tuning
