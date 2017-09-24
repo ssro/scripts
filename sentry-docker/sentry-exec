@@ -62,9 +62,9 @@ start_sentry() {
   echo -e "Starting sentry containers..."
   docker run -d --restart=always --network=sentry_net \
     --name sentry \
-    -e VIRTUAL_HOST=sentry.nologin.ro \
-    -e LETSENCRYPT_HOST=sentry.nologin.ro \
-    -e LETSENCRYPT_EMAIL=nologin@nologin.ro \
+    -e VIRTUAL_HOST=$(etcdctl get /sentry/VIRTUAL_HOST) \
+    -e LETSENCRYPT_HOST=$(etcdctl get /sentry/LETSENCRYPT_HOST) \
+    -e LETSENCRYPT_EMAIL=$(etcdctl get /sentry/LETSENCRYPT_EMAIL) \
     -e SENTRY_SECRET_KEY=$(etcdctl get /sentry/SENTRY_SECRET_KEY) \
     -e SENTRY_SINGLE_ORGANIZATION=$(etcdctl get /sentry/SENTRY_SINGLE_ORGANIZATION) \
     -e SENTRY_SERVER_EMAIL=$(etcdctl get /sentry/SENTRY_SERVER_EMAIL) \
