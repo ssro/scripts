@@ -10,7 +10,7 @@
 # Install etcd
 sudo yum -y install git etcd3 \
   && sudo systemctl enable etcd \
-  && systemctl start etcd || exit 0
+  && sudo systemctl start etcd || exit 0
 
 # Working directory
 WORKDIR="/opt"
