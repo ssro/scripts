@@ -28,6 +28,76 @@ LETSENCRYPT_EMAIL example@example.com
 
 Please refer to https://hub.docker.com/_/sentry/ and https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion for more information
 
+### Setup
+
+#### Prerequisites:
+
+1. Kernel 4.x for overlay2 storage driver
+2. Docker
+
+**Kernel Installation:**
+
+- log on to your machine
+
+```
+$ sudo yum -y install git
+$ cd $HOME; git clone git clone https://github.com/ssro/scripts.git
+$ $HOME/scripts/centos-elrepo.sh
+```
+- OS tuning
+
+```
+$ sudo bash -c "cat <<EOF > /etc/rc.local
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+EOF"
+$ sudo chmod +x /etc/rc.local
+
+$ sudo bash -c "cat <<EOF > /etc/sysctl.d/user-tuning.conf
+vm.overcommit_memory=1
+net.core.somaxconn=65535
+vm.swappiness=10
+vm.vfs_cache_pressure=50
+net.ipv4.tcp_congestion_control=htcp
+net.ipv4.tcp_keepalive_time=60
+net.ipv4.tcp_fin_timeout=10
+net.ipv4.tcp_keepalive_probes=5
+net.ipv4.tcp_slow_start_after_idle=0
+EOF"
+
+```
+
+- reboot your machine
+
+`$ sudo reboot`
+
+**Docker installation:**
+
+- log on to your machine
+
+`$ $HOME/scripts/docker-install.sh`
+
+- enable overlay2 storage driver for docker on xfs FS
+```
+$ sudo mkdir /etc/docker
+$ sudo bash -c "cat <<EOF > /etc/docker/daemon.json
+{
+ "storage-driver": "overlay2",
+ "storage-opts": [
+   "overlay2.override_kernel_check=true"
+  ]
+}
+EOF"
+```
+
+- logout and re-login to your machine
+
+#### Run the docker-sentry script
+
+`$ $HOME/scripts/sentry-docker/docker-sentry`
+
+This should take care of installing sentry along with nginx and ssl support.
+
+
 ### Backing up the database
 `$ ./sentry_exec backup`
 

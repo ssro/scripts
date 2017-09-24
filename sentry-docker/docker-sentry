@@ -3,48 +3,14 @@
 # Sentry on docker (CentOS) fully automated install script.
 # Author Sebastian Sasu <sebi@nologin.ro>
 
-# Docker engine must be installed on the host. Please refer to scripts/docker-install.sh script
+# Docker engine and kernel 4.x must be installed on the host.
+# Please refer to scripts/docker-install.sh script and
+# scripts/centos-elrepo.sh
+
 # Install etcd
 sudo yum -y install git etcd3 \
   && sudo systemctl enable etcd \
   && systemctl start etcd || exit 0
-
-# Install docker if you haven't done so before
-cd $HOME; git clone https://github.com/ssro/scripts.git
-$HOME/scripts/docker-install.sh
-
-# Install kernel 4.x
-$HOME/scripts/centos-elrepo.sh
-
-# Enable overlay2 storage driver for docker on xfs FS
-sudo mkdir /etc/docker
-sudo bash -c "cat <<EOF > /etc/docker/daemon.json
-{
- "storage-driver": "overlay2",
- "storage-opts": [
-   "overlay2.override_kernel_check=true"
-  ]
-}
-EOF"
-
-
-# OS tuning
-sudo bash -c "cat <<EOF > /etc/rc.local
-echo never > /sys/kernel/mm/transparent_hugepage/enabled
-EOF"
-sudo chmod +x /etc/rc.local
-
-sudo bash -c "cat <<EOF > /etc/sysctl.d/user-tuning.conf
-vm.overcommit_memory=1
-net.core.somaxconn=65535
-vm.swappiness=10
-vm.vfs_cache_pressure=50
-net.ipv4.tcp_congestion_control=htcp
-net.ipv4.tcp_keepalive_time=60
-net.ipv4.tcp_fin_timeout=10
-net.ipv4.tcp_keepalive_probes=5
-net.ipv4.tcp_slow_start_after_idle=0
-EOF"
 
 # Working directory
 WORKDIR="/opt"
