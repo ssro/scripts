@@ -14,7 +14,6 @@ There are environment variables in the main script which need to be changed and 
 
 ```
 POSTGRES_PASSWORD supersecret
-POSTGRES_USER sentry
 SENTRY_SINGLE_ORGANIZATION False
 SENTRY_SERVER_EMAIL sentry@example.com
 SENTRY_EMAIL_HOST smtp.example.com
