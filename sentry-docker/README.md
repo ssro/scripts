@@ -79,14 +79,14 @@ EOF"
 - enable overlay2 storage driver for docker on xfs FS
 ```
 $ sudo mkdir /etc/docker
-$ sudo bash -c "cat <<EOF > /etc/docker/daemon.json
+$ sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
 {
  "storage-driver": "overlay2",
  "storage-opts": [
    "overlay2.override_kernel_check=true"
   ]
 }
-EOF"
+EOF'
 ```
 
 - logout and re-login to your machine
