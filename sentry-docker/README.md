@@ -6,8 +6,6 @@ The main script, `docker-sentry` will install `etcd`, `docker`, `sentry` and `ng
 
 Please keep in mind that in order to use SSL, you will need a DNS A, AAAA or CNAME record in your domain's zone file, otherwise SSL won't work. You can run it on port 80 but that's entirely not recommended.
 
-Also, there are
-
 The `sentry-exec` script will take care of "administrative tasks", such as stopping, starting, upgrading sentry components after installation. Please have a look at the help section for detailed info.
 
 If this gets deployed on AWS EC2, use a machine with at least 2 GB of RAM. Same amount of RAM applies for bare metal
@@ -29,7 +27,7 @@ LETSENCRYPT_HOST sentry.example.com
 LETSENCRYPT_EMAIL example@example.com
 ```
 
-Please refer to https://hub.docker.com/_/sentry/ for more information
+Please refer to https://hub.docker.com/_/sentry/ and https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion for more information
 
 ### Backing up the database
 `$ ./sentry_exec backup`
