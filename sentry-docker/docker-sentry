@@ -12,10 +12,8 @@ sudo yum -y install git etcd3 \
   && sudo systemctl enable etcd \
   && sudo systemctl start etcd || exit 0
 
-# Working directory
-WORKDIR="/opt"
-sudo mkdir -p ${WORKDIR}/sentry/{postgres,redis,sentry}
-sudo mkdir -p ${WORKDIR}/nginx/certs
+sudo mkdir -p /opt/sentry/{postgres,redis,sentry}
+sudo mkdir -p /opt/nginx/certs
 
 # Set environment variables for your containers in etcd
 etcdctl set /sentry/POSTGRES_PASSWORD supersecret
@@ -34,6 +32,7 @@ etcdctl set /sentry/SENTRY_EMAIL_USE_TLS True
 etcdctl set /sentry/VIRTUAL_HOST sentry.example.com
 etcdctl set /sentry/LETSENCRYPT_HOST sentry.example.com
 etcdctl set /sentry/LETSENCRYPT_EMAIL example@example.com
+etcdctl set /nginx/WORKDIR /opt/nginx
 
 # Create an isolated docker network (bridge) It will automatically perform DNS resolution
 docker network create -d bridge --subnet 172.25.0.0/16 sentry_net
