@@ -8,7 +8,7 @@
 
 # Get the nginx template
 WORKDIR="/opt"
-curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > ${WORKDIR}/nginx/nginx.tmpl || exit 0
+sudo bash -c 'curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > ${WORKDIR}/nginx/nginx.tmpl || exit 0'
 
 # Start containers
 docker run -d -p 80:80 -p 443:443 \
