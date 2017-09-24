@@ -127,7 +127,10 @@ start_sentry_cron_worker() {
 stop_sentry_cron_worker() {
   echo "Stopping sentry cron & workers..."
   echo -e "Stopping sentry..."
-  docker stop -t 15 sentry-cron sentry-worker-1; docker rm -f sentry-cron sentry-worker-1
+  docker stop -t 15 sentry-cron; docker rm -f sentry-cron
+  # In case we have multiple workers make sure we stop/remove all
+  docker ps -a --filter "name=sentry-worker"| awk '{if(NR>1)print}'|awk '{print $NF}'|xargs docker stop
+  docker ps -a --filter "name=sentry-worker"| awk '{if(NR>1)print}'|awk '{print $NF}'|xargs docker rm -f
 }
 
 full_start() {
