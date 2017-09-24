@@ -185,6 +185,10 @@ cleanup() {
     sentry cleanup -q --days 60 --concurrency 4
 }
 
+backup() {
+  docker exec -it postgres bash -c 'pg_dump -U sentry sentry > /var/lib/postgresql/data/pgdata/sentry.sql'
+}
+
 case "$1" in
   "")
   usage
@@ -214,5 +218,8 @@ case "$1" in
   ;;
   "cleanup")
   cleanup
+  ;;
+  "backup")
+  backup
   ;;
 esac
