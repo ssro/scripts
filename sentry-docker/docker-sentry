@@ -14,8 +14,8 @@ sudo yum -y install git etcd3 \
 
 # Working directory
 WORKDIR="/opt"
-mkdir -p ${WORKDIR}/sentry/{postgres,redis,sentry}
-mkdir -p ${WORKDIR}/nginx/certs
+sudo mkdir -p ${WORKDIR}/sentry/{postgres,redis,sentry}
+sudo mkdir -p ${WORKDIR}/nginx/certs
 
 # Set environment variables for your containers in etcd
 etcdctl set /sentry/POSTGRES_PASSWORD supersecret
