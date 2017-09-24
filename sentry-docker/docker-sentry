@@ -19,9 +19,9 @@ sudo mkdir -p /opt/nginx/certs
 etcdctl set /sentry/POSTGRES_PASSWORD supersecret
 etcdctl set /sentry/POSTGRES_USER sentry
 etcdctl set /sentry/PGDATA /var/lib/postgresql/data/pgdata
-etcdctl set /sentry/PG_DIR ${WORKDIR}/sentry/postgres
-etcdctl set /sentry/REDIS_DIR ${WORKDIR}/sentry/redis
-etcdctl set /sentry/SENTRY_DIR ${WORKDIR}/sentry/sentry
+etcdctl set /sentry/PG_DIR /opt/sentry/postgres
+etcdctl set /sentry/REDIS_DIR /opt/sentry/redis
+etcdctl set /sentry/SENTRY_DIR /opt/sentry/sentry
 etcdctl set /sentry/SENTRY_SINGLE_ORGANIZATION False
 etcdctl set /sentry/SENTRY_SERVER_EMAIL sentry@example.com
 etcdctl set /sentry/SENTRY_EMAIL_HOST smtp.example.com
