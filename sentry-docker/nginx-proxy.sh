@@ -13,7 +13,6 @@ sudo bash -c "curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/
 # Start containers
 docker run -d -p 80:80 -p 443:443 \
     --network=sentry_net \
-    --network=bridge \
     --restart=always \
     --name nginx \
     -v /etc/nginx/conf.d  \
@@ -22,7 +21,7 @@ docker run -d -p 80:80 -p 443:443 \
     -v ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     nginx
-# docker network connect bridge nginx
+docker network connect bridge nginx
 docker run -d \
     --network=sentry_net \
     --restart=always \
