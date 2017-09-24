@@ -7,8 +7,7 @@
 # otherwise the host won't be accessible and the certificate generation will fail
 
 # Get the nginx template
-WORKDIR="/opt"
-sudo bash -c "curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > ${WORKDIR}/nginx/nginx.tmpl || exit 0"
+sudo bash -c "curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > $(etcdctl get /nginx/WORKDIR)/nginx.tmpl || exit 0"
 
 # Start containers
 docker run -d -p 80:80 -p 443:443 \
@@ -18,7 +17,7 @@ docker run -d -p 80:80 -p 443:443 \
     -v /etc/nginx/conf.d  \
     -v /etc/nginx/vhost.d \
     -v /usr/share/nginx/html \
-    -v ${WORKDIR}/nginx/certs:/etc/nginx/certs:ro \
+    -v $(etcdctl get /nginx/WORKDIR)/certs:/etc/nginx/certs:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
     nginx
 docker network connect bridge nginx
@@ -27,7 +26,7 @@ docker run -d \
     --restart=always \
     --name nginx-gen \
     --volumes-from nginx \
-    -v ${WORKDIR}/nginx/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
+    -v $(etcdctl get /nginx/WORKDIR)/nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro \
     -v /var/run/docker.sock:/tmp/docker.sock:ro \
     --label com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen \
     jwilder/docker-gen \
@@ -39,6 +38,6 @@ docker run -d \
     --restart=always \
     --name nginx-letsencrypt \
     --volumes-from nginx \
-    -v ${WORKDIR}/nginx/certs:/etc/nginx/certs:rw \
+    -v $(etcdctl get /nginx/WORKDIR)/certs:/etc/nginx/certs:rw \
     -v /var/run/docker.sock:/var/run/docker.sock:ro \
     jrcs/letsencrypt-nginx-proxy-companion
