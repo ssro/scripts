@@ -70,16 +70,67 @@ debian_docker() {
 
   sudo apt-get -y install docker-ce
 
+
   # Post install
 
   sudo usermod -aG docker "$USER"
   sudo systemctl enable docker || exit 0
 
+  # Stop docker and add overlay2 storage driver
+  sudo systemctl stop docker && sudo cp -au /var/lib/docker /var/lib/docker.bk
+
+  sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
+  {
+    "storage-driver": "overlay2"
+  }
+  EOF'
+  # Start docker
+  sudo systemctl start docker
 }
 
-echo ""
-echo "My Operating System is (c)entOS/(d)ebian: "
-echo ""
+ubuntu_docker() {
+  # Update everything
+  sudo apt-get -y update && sudo apt-get -y dist-upgrade
+
+  # Remove previous installs of docker
+  sudo apt-get -y remove docker docker-engine docker.io
+
+  # Install prerequisites
+  sudo apt-get install -y \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      software-properties-common
+
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo add-apt-repository \
+     "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+     $(lsb_release -cs) \
+     stable"
+
+  # Install docker & enable it at boot time
+  sudo apt-get -y update \
+    && sudo apt-get install docker-ce \
+    && sudo usermod -aG docker $USER \
+    && sudo systemctl enable docker || exit 0
+
+  # Logout and relogin to your machine or reboot
+
+  # Stop docker and add overlay2 storage driver
+  sudo systemctl stop docker && sudo cp -au /var/lib/docker /var/lib/docker.bk
+
+  sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
+  {
+    "storage-driver": "overlay2"
+  }
+  EOF'
+
+  # Start docker
+  sudo systemctl start docker
+}
+echo -e "\n"
+echo -e "My Operating System is \033[1m(c)\033[0mentOS/\033[1m(d)\033[0mebian/\033[1m(u)\033[0mbuntu: \n"
+
 read -r os
 
 if [[ "$os" == "c" ]]; then
@@ -88,8 +139,11 @@ if [[ "$os" == "c" ]]; then
 elif [[ "$os" == "d" ]]; then
     echo "Installing Docker on Debian..."
     debian_docker
-else "Unsupported OS. Exiting..."
+elif [[ "$os" == "u" ]]; then
+    echo "Installing Docker on Ubuntu..."
+    ubuntu_docker
+else "Your OS is something that we don't support in this script. Please create a pull request..."
   exit 0
 fi
 
-echo -e "You need to re-login to be able to start docker as a regular user\n"
+echo -e "\033[1mYou need to re-login to be able to start docker as a regular user\033[0\n"
