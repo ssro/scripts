@@ -41,7 +41,7 @@ centos_docker() {
 #     "overlay2.override_kernel_check=true"
 #   ]
 # }
-# EOF
+#EOF
 
 }
 
@@ -83,7 +83,7 @@ debian_docker() {
   {
     "storage-driver": "overlay2"
   }
-  EOF'
+EOF'
   # Start docker
   sudo systemctl start docker
 }
@@ -110,7 +110,7 @@ ubuntu_docker() {
 
   # Install docker & enable it at boot time
   sudo apt-get -y update \
-    && sudo apt-get install docker-ce \
+    && sudo apt-get -y install docker-ce \
     && sudo usermod -aG docker $USER \
     && sudo systemctl enable docker || exit 0
 
@@ -123,7 +123,7 @@ ubuntu_docker() {
   {
     "storage-driver": "overlay2"
   }
-  EOF'
+EOF'
 
   # Start docker
   sudo systemctl start docker
@@ -145,5 +145,5 @@ elif [[ "$os" == "u" ]]; then
 else "Your OS is something that we don't support in this script. Please create a pull request..."
   exit 0
 fi
-
+echo -e "\n"
 echo -e "\033[1mYou need to re-login to be able to start docker as a regular user\033[0\n"
