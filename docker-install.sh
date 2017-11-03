@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Docker automated installation for CentOS 7 or Debian Stretch/Jessie
+# Docker automated installation for CentOS 7, Debian Stretch/Jessie or Ubuntu (14.04, 16.04)
 
 centos_docker() {
 # Docker automated installation on CentOS 7
