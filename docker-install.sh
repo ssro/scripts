@@ -33,15 +33,21 @@ centos_docker() {
   sudo systemctl enable docker
 
 # Enable overlay2 storage driver on xfs (kernel 4.x)
-#  mkdir /etc/docker
-# cat <<EOF > /etc/docker/daemon.json
-# {
-#   "storage-driver": "overlay2",
-#   "storage-opts": [
-#     "overlay2.override_kernel_check=true"
-#   ]
-# }
-#EOF
+# and logrotate
+sudo mkdir /etc/docker || true
+sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
+{
+	"storage-driver": "overlay2",
+	"storage-opts": [
+		"overlay2.override_kernel_check=true"
+	],
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-size": "50m",
+		"max-file": "5"
+	}
+}
+EOF'
 
 }
 
@@ -80,9 +86,14 @@ debian_docker() {
   sudo systemctl stop docker && sudo cp -au /var/lib/docker /var/lib/docker.bk
 
   sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
-  {
-    "storage-driver": "overlay2"
-  }
+{
+	"storage-driver": "overlay2",
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-size": "50m",
+		"max-file": "5"
+	}
+}
 EOF'
   # Start docker
   sudo systemctl start docker
