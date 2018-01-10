@@ -131,9 +131,14 @@ ubuntu_docker() {
   sudo systemctl stop docker && sudo cp -au /var/lib/docker /var/lib/docker.bk
 
   sudo bash -c 'cat <<EOF > /etc/docker/daemon.json
-  {
-    "storage-driver": "overlay2"
-  }
+{
+	"storage-driver": "overlay2",
+	"log-driver": "json-file",
+	"log-opts": {
+		"max-size": "50m",
+		"max-file": "5"
+	}
+}
 EOF'
 
   # Start docker
